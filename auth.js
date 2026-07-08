@@ -2,6 +2,11 @@
 
 const USERS_KEY = 'healthtracker_users';
 const CURRENT_USER_KEY = 'healthtracker_current_user';
+const VERIFICATION_CODES_KEY = 'healthtracker_verification_codes';
+
+// Temporary storage for password reset
+let resetEmail = '';
+let resetUsername = '';
 
 // Check if user is already logged in
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,6 +37,24 @@ function initAuthForms() {
         e.preventDefault();
         handleProfileSetup();
     });
+
+    // Forgot Password Form
+    document.getElementById('forgot-password-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleForgotPassword();
+    });
+
+    // Verify Code Form
+    document.getElementById('verify-code-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleVerifyCode();
+    });
+
+    // Reset Password Form
+    document.getElementById('reset-password-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleResetPassword();
+    });
 }
 
 function showLogin() {
@@ -47,6 +70,21 @@ function showSignup() {
 function showProfileSetup() {
     hideAllSections();
     document.getElementById('profile-setup-section').classList.add('active');
+}
+
+function showForgotPassword() {
+    hideAllSections();
+    document.getElementById('forgot-password-section').classList.add('active');
+}
+
+function showVerifyCode() {
+    hideAllSections();
+    document.getElementById('verify-code-section').classList.add('active');
+}
+
+function showResetPassword() {
+    hideAllSections();
+    document.getElementById('reset-password-section').classList.add('active');
 }
 
 function hideAllSections() {
@@ -86,6 +124,47 @@ function hashPassword(password) {
         hash = hash & hash;
     }
     return hash.toString();
+}
+
+// Generate 6-digit verification code
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Store verification code
+function storeVerificationCode(email, code) {
+    const codes = JSON.parse(localStorage.getItem(VERIFICATION_CODES_KEY) || '{}');
+    codes[email.toLowerCase()] = {
+        code: code,
+        timestamp: Date.now(),
+        expiresIn: 10 * 60 * 1000 // 10 minutes
+    };
+    localStorage.setItem(VERIFICATION_CODES_KEY, JSON.stringify(codes));
+}
+
+// Verify code
+function verifyCode(email, code) {
+    const codes = JSON.parse(localStorage.getItem(VERIFICATION_CODES_KEY) || '{}');
+    const stored = codes[email.toLowerCase()];
+    
+    if (!stored) return false;
+    
+    // Check if expired
+    if (Date.now() - stored.timestamp > stored.expiresIn) {
+        delete codes[email.toLowerCase()];
+        localStorage.setItem(VERIFICATION_CODES_KEY, JSON.stringify(codes));
+        return false;
+    }
+    
+    return stored.code === code;
+}
+
+// Simulate sending email (in production, this would call a backend API)
+function sendVerificationEmail(email, code) {
+    console.log(`Verification code for ${email}: ${code}`);
+    // In a real app, this would send an actual email via a backend service
+    // For demo purposes, we'll just show an alert
+    alert(`Demo Mode: Your verification code is ${code}\n\nIn production, this would be sent to ${email}`);
 }
 
 // Handle Login
@@ -137,7 +216,7 @@ function handleSignup() {
 
     // Validation
     if (!name || !username || !email || !password || !confirmPassword) {
-        showAlert('Please fill in all fields', 'error', 'signup-section');
+        showAlert('Please fill in all required fields', 'error', 'signup-section');
         return;
     }
 
@@ -199,14 +278,16 @@ function handleSignup() {
 function handleProfileSetup() {
     const age = document.getElementById('setup-age').value;
     const gender = document.getElementById('setup-gender').value;
+    const height = document.getElementById('setup-height').value;
+    const weight = document.getElementById('setup-weight').value;
     const avgSystolic = document.getElementById('setup-avg-systolic').value;
     const avgDiastolic = document.getElementById('setup-avg-diastolic').value;
     const avgSugar = document.getElementById('setup-avg-sugar').value;
     const conditions = document.getElementById('setup-conditions').value.trim();
     const medications = document.getElementById('setup-medications').value.trim();
 
-    if (!age || !gender) {
-        showAlert('Please fill in age and gender', 'error', 'profile-setup-section');
+    if (!age || !gender || !height || !weight) {
+        showAlert('Please fill in all required fields (age, gender, height, weight)', 'error', 'profile-setup-section');
         return;
     }
 
@@ -218,6 +299,8 @@ function handleProfileSetup() {
     currentUser.profile = {
         age: parseInt(age),
         gender: gender,
+        height: parseFloat(height),
+        weight: parseFloat(weight),
         avgSystolic: avgSystolic ? parseInt(avgSystolic) : null,
         avgDiastolic: avgDiastolic ? parseInt(avgDiastolic) : null,
         avgSugar: avgSugar ? parseInt(avgSugar) : null,
@@ -237,6 +320,110 @@ function handleProfileSetup() {
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 1500);
+}
+
+// Handle Forgot Password
+function handleForgotPassword() {
+    const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+
+    if (!email) {
+        showAlert('Please enter your email address', 'error', 'forgot-password-section');
+        return;
+    }
+
+    // Find user with this email
+    const users = getAllUsers();
+    const userEntry = Object.entries(users).find(([_, user]) => user.email === email);
+
+    if (!userEntry) {
+        showAlert('No account found with this email address.', 'error', 'forgot-password-section');
+        return;
+    }
+
+    resetEmail = email;
+    resetUsername = userEntry[0];
+
+    // Generate and store verification code
+    const code = generateVerificationCode();
+    storeVerificationCode(email, code);
+
+    // Send verification email (simulated)
+    sendVerificationEmail(email, code);
+
+    showAlert('Verification code sent to your email!', 'success', 'forgot-password-section');
+    
+    setTimeout(() => {
+        showVerifyCode();
+    }, 1500);
+}
+
+// Handle Verify Code
+function handleVerifyCode() {
+    const code = document.getElementById('verify-code').value.trim();
+
+    if (!code || code.length !== 6) {
+        showAlert('Please enter a valid 6-digit code', 'error', 'verify-code-section');
+        return;
+    }
+
+    if (!verifyCode(resetEmail, code)) {
+        showAlert('Invalid or expired verification code. Please try again.', 'error', 'verify-code-section');
+        return;
+    }
+
+    showAlert('Code verified! You can now reset your password.', 'success', 'verify-code-section');
+    
+    setTimeout(() => {
+        showResetPassword();
+    }, 1000);
+}
+
+// Handle Reset Password
+function handleResetPassword() {
+    const newPassword = document.getElementById('reset-password').value;
+    const confirmPassword = document.getElementById('reset-confirm').value;
+
+    if (!newPassword || !confirmPassword) {
+        showAlert('Please fill in all fields', 'error', 'reset-password-section');
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        showAlert('Password must be at least 6 characters long', 'error', 'reset-password-section');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        showAlert('Passwords do not match', 'error', 'reset-password-section');
+        return;
+    }
+
+    // Update user's password
+    const users = getAllUsers();
+    const user = users[resetUsername];
+    user.password = hashPassword(newPassword);
+    user.lastPasswordReset = new Date().toISOString();
+    
+    users[resetUsername] = user;
+    saveAllUsers(users);
+
+    // Clear verification code
+    const codes = JSON.parse(localStorage.getItem(VERIFICATION_CODES_KEY) || '{}');
+    delete codes[resetEmail];
+    localStorage.setItem(VERIFICATION_CODES_KEY, JSON.stringify(codes));
+
+    // Clear reset variables
+    resetEmail = '';
+    resetUsername = '';
+
+    showAlert('Password reset successful! You can now login with your new password.', 'success', 'reset-password-section');
+    
+    setTimeout(() => {
+        showLogin();
+        document.getElementById('reset-password-form').reset();
+        document.getElementById('verify-code-form').reset();
+        document.getElementById('forgot-password-form').reset();
+    }, 2000);
 }
 
 // Show Alert

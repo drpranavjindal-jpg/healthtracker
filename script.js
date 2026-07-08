@@ -17,6 +17,7 @@ const ENV_CONFIG = {
 
 // User Authentication System
 const CURRENT_USER_KEY = 'healthtracker_current_user';
+const USERS_KEY = 'healthtracker_users';
 
 // Check authentication on page load
 let currentUser = null;
@@ -148,6 +149,47 @@ function initForms() {
         e.preventDefault();
         sendChatMessage();
     });
+
+    document.getElementById('profile-update-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateProfile();
+    });
+}
+
+// Update Profile Function
+function updateProfile() {
+    const height = document.getElementById('profile-height').value;
+    const weight = document.getElementById('profile-weight').value;
+
+    if (!height && !weight) {
+        showAlert('Please enter at least one value to update', 'error');
+        return;
+    }
+
+    // Get all users
+    const users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+    
+    // Update current user's profile
+    if (!currentUser.profile) {
+        currentUser.profile = {};
+    }
+
+    if (height) {
+        currentUser.profile.height = parseFloat(height);
+    }
+    if (weight) {
+        currentUser.profile.weight = parseFloat(weight);
+    }
+
+    // Save to users storage
+    users[currentUser.username] = currentUser;
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    
+    // Update current user storage
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+
+    showAlert('Profile updated successfully!', 'success');
+    loadProfile();
 }
 
 // Local Storage Functions (User-Specific)
@@ -632,6 +674,42 @@ function loadProfile() {
             </div>
         `;
 
+        if (currentUser.profile.height) {
+            html += `
+                <div class="profile-row">
+                    <span class="profile-label">Height:</span>
+                    <span class="profile-value">${currentUser.profile.height} cm</span>
+                </div>
+            `;
+        }
+
+        if (currentUser.profile.weight) {
+            html += `
+                <div class="profile-row">
+                    <span class="profile-label">Weight:</span>
+                    <span class="profile-value">${currentUser.profile.weight} kg</span>
+                </div>
+            `;
+        }
+
+        // Calculate and show BMI if both height and weight are available
+        if (currentUser.profile.height && currentUser.profile.weight) {
+            const heightInMeters = currentUser.profile.height / 100;
+            const bmi = (currentUser.profile.weight / (heightInMeters * heightInMeters)).toFixed(1);
+            let bmiCategory = '';
+            if (bmi < 18.5) bmiCategory = 'Underweight';
+            else if (bmi < 25) bmiCategory = 'Normal';
+            else if (bmi < 30) bmiCategory = 'Overweight';
+            else bmiCategory = 'Obese';
+
+            html += `
+                <div class="profile-row">
+                    <span class="profile-label">BMI:</span>
+                    <span class="profile-value">${bmi} (${bmiCategory})</span>
+                </div>
+            `;
+        }
+
         if (currentUser.profile.avgSystolic) {
             html += `
                 <div class="profile-row">
@@ -666,6 +744,14 @@ function loadProfile() {
                     <span class="profile-value">${currentUser.profile.medications}</span>
                 </div>
             `;
+        }
+
+        // Pre-fill the update form
+        if (currentUser.profile.height) {
+            document.getElementById('profile-height').value = currentUser.profile.height;
+        }
+        if (currentUser.profile.weight) {
+            document.getElementById('profile-weight').value = currentUser.profile.weight;
         }
     }
 
@@ -755,7 +841,7 @@ async function generateReport() {
     // Header
     doc.setFontSize(20);
     doc.setTextColor(79, 70, 229);
-    doc.text('HealthTracker Report', 105, 20, { align: 'center' });
+    doc.text('Health Saathi Report', 105, 20, { align: 'center' });
     
     doc.setFontSize(10);
     doc.setTextColor(100);
