@@ -194,84 +194,6 @@ body {
     background: #4338ca;
 }
 
-.switch-text {
-    text-align: center;
-    margin-top: 20px;
-    color: var(--text-secondary);
-}
-
-.switch-text a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.switch-text a:hover {
-    text-decoration: underline;
-}
-
-/* Privacy Section */
-.privacy-section {
-    background: #f0fdf4;
-    border: 2px solid #86efac;
-    border-radius: 12px;
-    padding: 20px;
-    margin: 25px 0;
-}
-
-.privacy-section h3 {
-    color: #065f46;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-.privacy-content {
-    margin-bottom: 20px;
-}
-
-.privacy-content p {
-    color: var(--text-primary);
-    margin-bottom: 10px;
-}
-
-.privacy-content ul {
-    list-style: none;
-    padding: 0;
-    margin: 15px 0;
-}
-
-.privacy-content ul li {
-    color: var(--text-primary);
-    padding: 8px 0;
-    line-height: 1.6;
-}
-
-.privacy-note {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 4px solid var(--warning-color);
-    margin-top: 15px;
-    font-size: 0.9rem;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: start;
-    gap: 10px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-primary);
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: auto;
-    margin-top: 3px;
-    cursor: pointer;
-    width: 18px;
-    height: 18px;
-}
-
 /* Alert Messages */
 .alert {
     padding: 15px 20px;
@@ -317,10 +239,23 @@ body {
     padding: 20px;
 }
 
-.auth-footer p {
-    color: white;
+.privacy-notice-footer {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+}
+
+.privacy-notice-footer h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.privacy-notice-footer p {
+    color: var(--text-primary);
     font-size: 0.9rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    line-height: 1.6;
 }
 
 /* Responsive Design */
