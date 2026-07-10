@@ -1,17 +1,14 @@
 // ==========================================
-// 1. "NO MESH, NO ENTRY" RULE VALIDATION LAYER
+// 1. "NO MESH, NO ENTRY" CONTEXTUAL GUARD
 // ==========================================
 const MeshValidator = {
-    // Ensures everything strictly resides inside the proper grid layout system
     verifyContext: function(formElement) {
         if (!formElement) return false;
-
-        // "No Mesh, No Entry" Rule Enforcement
-        // Looks for your structural mesh wrappers or the main layout container
-        const meshContainer = formElement.closest('.mesh-layout') || document.getElementById('root-mesh-container');
         
+        // Crawls upwards to confirm submission context sits strictly inside validation parameters
+        const meshContainer = formElement.closest('.mesh-layout') || document.getElementById('root-mesh-container');
         if (!meshContainer) {
-            console.error("Rule Triggered: Entry denied due to structural layout isolation.");
+            console.error("Layout Restriction Triggered: Entry Denied. No Mesh, No Entry.");
             return false;
         }
         return true;
@@ -19,7 +16,7 @@ const MeshValidator = {
 };
 
 // ==========================================
-// 2. LIFECYCLE MANAGEMENT & ROUTING
+// 2. RUNTIME IDENTITY LIFECYCLE MANAGEMENT
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     checkActiveSession();
@@ -31,72 +28,49 @@ function checkActiveSession() {
     const isAuthPage = window.location.pathname.includes('auth.html');
 
     if (!activeEmail) {
-        if (!isAuthPage) {
-            window.location.href = './auth.html';
-        }
+        if (!isAuthPage) window.location.replace('./auth.html');
         return; 
     }
 
-    if (activeEmail && isAuthPage) {
-        window.location.href = './index.html';
+    if (isAuthPage) {
+        window.location.replace('./index.html');
         return;
     }
 
-    if (activeEmail && !isAuthPage) {
-        const activeName = localStorage.getItem('currentUserName') || "Radha Jindal";
-        const userNameElement = document.getElementById('displayUserName');
-        if (userNameElement) {
-            userNameElement.textContent = activeName;
-        }
-        initDashboardForms();
-    }
+    const activeName = localStorage.getItem('currentUserName') || "Radha Jindal";
+    const userNameElement = document.getElementById('displayUserName');
+    if (userNameElement) userNameElement.textContent = activeName;
+    initDashboardForms();
 }
 
 // ==========================================
-// 3. INTERACTIVE WORKSPACE VIEW CONTROLLER
+// 3. INTERACTIVE TAB SELECTOR INTERFACES
 // ==========================================
 function switchTab(tabName) {
     const views = ['dashboard', 'vitals', 'food', 'medicines'];
     views.forEach(v => {
-        const targetSection = document.getElementById(`${v}-tab`);
-        if (targetSection) {
-            if (v === tabName) {
-                targetSection.style.setProperty('display', 'block', 'important');
-            } else {
-                targetSection.style.setProperty('display', 'none', 'important');
-            }
-        }
+        const section = document.getElementById(`${v}-tab`);
+        if (section) section.style.setProperty('display', (v === tabName) ? 'block' : 'none', 'important');
         
-        // Keeps nav navigation highlighted seamlessly
-        const targetBtn = document.getElementById(`btn-${v}`);
-        if (targetBtn) {
-            if (v === tabName) {
-                targetBtn.style.background = '#e0e7ff';
-                targetBtn.style.color = '#4f46e5';
-            } else {
-                targetBtn.style.background = 'transparent';
-                targetBtn.style.color = '#64748b';
-            }
+        const btn = document.getElementById(`btn-${v}`);
+        if (btn) {
+            btn.style.background = (v === tabName) ? '#e0e7ff' : 'transparent';
+            btn.style.color = (v === tabName) ? '#4f46e5' : '#64748b';
         }
     });
 }
 
 // ==========================================
-// 4. DATA CAPTURE STREAMS & TRANSACTION HANDLERS
+// 4. DEFENSIVE TRANSACTION PIPELINE LISTENERS
 // ==========================================
 function initDashboardForms() {
-    // Vitals Submission Link
     document.getElementById('vitals-form')?.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        if (!MeshValidator.verifyContext(this)) {
-            alert("Action Blocked: 'No Mesh, No Entry' rule violation.");
-            return;
-        }
+        if (!MeshValidator.verifyContext(this)) { alert("Action Blocked: 'No Mesh, No Entry' rule violation."); return; }
 
-        const sys = parseInt(document.getElementById('vitals-systolic').value) || 0;
-        const dia = parseInt(document.getElementById('vitals-diastolic').value) || 0;
-        const sugar = parseInt(document.getElementById('vitals-sugar').value) || 0;
+        const sys = parseInt(document.getElementById('vitals-systolic').value, 10) || 0;
+        const dia = parseInt(document.getElementById('vitals-diastolic').value, 10) || 0;
+        const sugar = parseInt(document.getElementById('vitals-sugar').value, 10) || 0;
         
         const bpView = document.getElementById('dash-bp');
         const sugarView = document.getElementById('dash-sugar');
@@ -108,31 +82,21 @@ function initDashboardForms() {
         switchTab('dashboard');
     });
 
-    // Nutrition Submission Link
     document.getElementById('food-form')?.addEventListener('submit', function(e) {
         e.preventDefault();
+        if (!MeshValidator.verifyContext(this)) { alert("Action Blocked: 'No Mesh, No Entry' rule violation."); return; }
 
-        if (!MeshValidator.verifyContext(this)) {
-            alert("Action Blocked: 'No Mesh, No Entry' rule violation.");
-            return;
-        }
-
-        const meal = document.getElementById('food-desc').value;
+        const meal = document.getElementById('food-desc').value.trim();
         saveJourneyLog('FOOD', `Nutritional Log - Consumed: "${meal}"`, null);
         this.reset();
         switchTab('dashboard');
     });
 
-    // Medicine Submission Link (with dynamic mg metrics)
     document.getElementById('med-form')?.addEventListener('submit', function(e) {
         e.preventDefault();
+        if (!MeshValidator.verifyContext(this)) { alert("Action Blocked: 'No Mesh, No Entry' rule violation."); return; }
 
-        if (!MeshValidator.verifyContext(this)) {
-            alert("Action Blocked: 'No Mesh, No Entry' rule violation.");
-            return;
-        }
-
-        const medName = document.getElementById('med-name').value;
+        const medName = document.getElementById('med-name').value.trim();
         const dosageMg = document.getElementById('med-mg').value;
         
         saveJourneyLog('MEDICINE', `Prescription Log - Medication: ${medName} | Strength: ${dosageMg} mg`, { medName, dosageMg });
@@ -143,19 +107,16 @@ function initDashboardForms() {
 
 function saveJourneyLog(type, message, meta) {
     let logs = JSON.parse(localStorage.getItem('healthJourneyRecords')) || [];
-    const entry = {
-        type: type,
-        text: message,
-        meta: meta,
+    logs.unshift({
+        type: type, text: message, meta: meta,
         time: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    logs.unshift(entry);
+    });
     localStorage.setItem('healthJourneyRecords', JSON.stringify(logs));
     renderJourneyLogs();
 }
 
 // ==========================================
-// 5. DIAGNOSTIC PARSER & PRESENTATION SUMMARY
+// 5. DIAGNOSTIC INTERPRETATION ENGINE (HEIGHT & WEIGHT INTEGRATED)
 // ==========================================
 function renderJourneyLogs() {
     const container = document.getElementById('journeyLogHistory');
@@ -200,42 +161,37 @@ function generateClinicalInsights(logs) {
     const box = document.getElementById('clinicalInsightsBox');
     if (!insightsList) return;
 
+    // Read the Height & Weight data entered during authentication/registration
+    const heightMetric = localStorage.getItem('userHeight') || "165";
+    const weightMetric = localStorage.getItem('userWeight') || "62";
+
+    let insights = [`👤 <strong>Patient Demographics Profile:</strong> Baseline Height: ${heightMetric} cm | Body Mass Weight: ${weightMetric} kg`];
+
     if (logs.length === 0) {
-        if (box) {
-            box.style.background = '#f8fafc';
-            box.style.borderColor = '#e2e8f0';
-        }
-        insightsList.innerHTML = `<li style="color: #64748b; font-style: italic; list-style: none;">No diagnostic data logged yet. Add vitals or medications to generate insights.</li>`;
+        if (box) { box.style.background = '#f8fafc'; box.style.borderColor = '#e2e8f0'; }
+        insightsList.innerHTML = `
+            <li style="list-style: square; color: #1e293b; margin-bottom: 6px; line-height: 1.4;">${insights[0]}</li>
+            <li style="color: #64748b; font-style: italic; list-style: none; margin-top: 6px;">No dynamic clinical insights available yet. Add vitals to analyze metrics.</li>
+        `;
         return;
     }
 
-    let insights = [];
     let uniqueMeds = new Set();
+    
     let latestVitals = logs.find(l => l.type === 'VITALS');
-
     if (latestVitals && latestVitals.meta) {
         const { sys, dia, sugar } = latestVitals.meta;
-        
-        if (sys >= 130 || dia >= 80) {
-            insights.push(`⚠️ <strong>Elevated Blood Pressure Parameters Detected:</strong> Read at ${sys}/${dia} mmHg.`);
-        } else if (sys < 90 || dia < 60) {
-            insights.push(`⚠️ <strong>Hypotension Parameters Noted:</strong> Blood pressure running at ${sys}/${dia} mmHg.`);
-        } else {
-            insights.push(`✅ <strong>Optimal Blood Pressure Standard:</strong> Baseline reads perfect at ${sys}/${dia} mmHg.`);
-        }
+        if (sys >= 130 || dia >= 80) insights.push(`⚠️ <strong>Elevated Blood Pressure:</strong> Checked at ${sys}/${dia} mmHg.`);
+        else insights.push(`✅ <strong>Optimal Blood Pressure Standard:</strong> Baseline reads perfect at ${sys}/${dia} mmHg.`);
 
-        if (sugar >= 140) {
-            insights.push(`⚠️ <strong>Hyperglycemia Metric Flagged:</strong> Serum glucose read high at ${sugar} mg/dL.`);
-        } else if (sugar < 70) {
-            insights.push(`🚨 <strong>Hypoglycemia Emergency Threshold:</strong> Critical low glucose reading at ${sugar} mg/dL.`);
-        } else {
-            insights.push(`✅ <strong>Glucose Stability Logged:</strong> Level reads beautifully balanced at ${sugar} mg/dL.`);
-        }
+        if (sugar >= 140) insights.push(`⚠️ <strong>Hyperglycemia Metric Flagged:</strong> Serum glucose read high at ${sugar} mg/dL.`);
+        else if (sugar < 70) insights.push(`🚨 <strong>Hypoglycemia Emergency Threshold:</strong> Critical low glucose reading at ${sugar} mg/dL.`);
+        else insights.push(`✅ <strong>Glucose Stability Logged:</strong> Balanced reading at ${sugar} mg/dL.`);
     }
 
     logs.forEach(l => {
         if (l.type === 'MEDICINE' && l.meta) {
-            uniqueMeds.add(`💊 Active Regime Tracked: <strong>${l.meta.medName}</strong> at a dosage strength of <strong>${l.meta.dosageMg} mg</strong>.`);
+            uniqueMeds.add(`💊 Active Prescription Regime: <strong>${l.meta.medName}</strong> at a dosage strength of <strong>${l.meta.dosageMg} mg</strong>.`);
         }
     });
     uniqueMeds.forEach(med => insights.push(med));
@@ -246,32 +202,25 @@ function generateClinicalInsights(logs) {
         box.style.borderColor = hasWarnings ? '#fef08a' : '#bbf7d0';
     }
 
-    insightsList.innerHTML = insights.map(ins => `<li style="list-style: square; margin-bottom: 4px; color: #1e293b;">${ins}</li>`).join('');
+    insightsList.innerHTML = insights.map(ins => `<li style="list-style: square; margin-bottom: 6px; color: #1e293b; line-height: 1.4;">${ins}</li>`).join('');
 }
 
 // ==========================================
-// 6. EXPORT UTILITIES
+// 6. PDF EXPORT ARCHIVE UTILITIES
 // ==========================================
 function downloadDoctorPDF() {
     const targetElement = document.getElementById('printableReportArea');
     const userName = localStorage.getItem('currentUserName') || "Patient";
-    
     if (!targetElement) return;
 
-    const opt = {
-        margin:       [15, 15],
-        filename:     `Clinical_Report_${userName.replace(/\s+/g, '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().from(targetElement).set(opt).save();
+    html2pdf().from(targetElement).set({
+        margin: [15, 15], filename: `Clinical_Report_${userName.replace(/\s+/g, '_')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save();
 }
 
 function clearActiveSession() {
-    localStorage.removeItem('currentUserEmail');
-    localStorage.removeItem('currentUserName');
-    localStorage.removeItem('healthJourneyRecords');
-    window.location.href = './auth.html';
+    localStorage.clear();
+    window.location.replace('./auth.html');
 }
