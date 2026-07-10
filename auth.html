@@ -5,48 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Saathi - Secure Access</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="auth.css">
 </head>
-<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 24px;">
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 24px; font-family: system-ui, sans-serif; margin: 0;">
     
-    <div class="auth-container" style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box;">
-        
-        <div id="login-section" class="auth-section active">
-            <div class="auth-card" style="background: #ffffff; border-radius: 16px; padding: 45px 40px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.15);">
-                
-                <div class="auth-header" style="text-align: center; margin-bottom: 35px;">
-                    <span style="font-size: 4rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));">🏥</span>
-                    <h2 style="font-size: 2.25rem; color: #1e293b; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.025em;">Welcome to Health Saathi</h2>
-                    <p style="color: #64748b; font-size: 1.05rem; line-height: 1.5;">Your secure, local health companion</p>
-                </div>
-                
-                <form id="loginForm" onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 24px;">
-                    <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
-                        <label for="userName" style="font-weight: 600; color: #334155; font-size: 0.95rem;">Full Name</label>
-                        <input type="text" id="userName" name="name" autocomplete="name" placeholder="Enter your full name" required 
-                               style="width: 100%; padding: 14px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; transition: all 0.2s; background: #f8fafc;">
-                    </div>
-                    
-                    <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
-                        <label for="userEmail" style="font-weight: 600; color: #334155; font-size: 0.95rem;">Email Address</label>
-                        <input type="email" id="userEmail" name="email" autocomplete="email" placeholder="Enter username or email" required 
-                               style="width: 100%; padding: 14px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; transition: all 0.2s; background: #f8fafc;">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" 
-                            style="width: 100%; padding: 14px; font-size: 1.1rem; font-weight: 700; color: white; background: #4f46e5; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); transition: all 0.2s;">
-                        Enter Dashboard
-                    </button>
-                </form>
+    <div style="width: 100%; max-width: 480px; margin: 0 auto;">
+        <div style="background: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="font-size: 3.5rem; display: block; margin-bottom: 10px;">🏥</span>
+                <h2 id="auth-title" style="font-size: 1.85rem; color: #1e293b; margin: 0 0 8px 0; font-weight: 800;">Welcome to Health Saathi</h2>
+                <p id="auth-subtitle" style="color: #64748b; margin: 0; font-size: 0.95rem;">Sign in to view your health dashboard</p>
             </div>
-        </div>
 
-        <footer class="auth-footer" style="margin-top: 35px; text-align: center;">
-            <div class="privacy-notice-footer" style="background: rgba(255, 255, 255, 0.95); padding: 25px 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                <h4 style="color: #4f46e5; margin-bottom: 6px; font-size: 1.1rem; font-weight: 700;">🔒 Absolute Privacy</h4>
-                <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin: 0;">All your health metrics are stored <strong>locally on your device only</strong>.</p>
-            </div>
-        </footer>
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="userEmail" style="font-weight: 600; color: #334155; font-size: 0.9rem;">Email Address</label>
+                    <input type="email" id="userEmail" placeholder="name@example.com" required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                </div>
+                <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; color: white; background: #4f46e5; border: none; border-radius: 8px; cursor: pointer;">
+                    Sign In to Dashboard
+                </button>
+                <p style="text-align: center; font-size: 0.95rem; color: #64748b; margin-top: 10px;">
+                    New user? <a href="#" onclick="toggleAuthMode('signup')" style="color: #4f46e5; font-weight: 600; text-decoration: none;">Create a Profile</a>
+                </p>
+            </form>
+
+            <form id="signupForm" onsubmit="handleSignUpSubmit(event)" style="display: none; flex-direction: column; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="newName" style="font-weight: 600; color: #334155; font-size: 0.9rem;">Full Name</label>
+                    <input type="text" id="newName" placeholder="Enter your full name" required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="newEmail" style="font-weight: 600; color: #334155; font-size: 0.9rem;">Email Address</label>
+                    <input type="email" id="newEmail" placeholder="name@example.com" required style="width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+                </div>
+                <button type="submit" style="width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; color: white; background: #10b981; border: none; border-radius: 8px; cursor: pointer;">
+                    Register & Create Profile
+                </button>
+                <p style="text-align: center; font-size: 0.95rem; color: #64748b; margin-top: 10px;">
+                    Already have a profile? <a href="#" onclick="toggleAuthMode('login')" style="color: #4f46e5; font-weight: 600; text-decoration: none;">Sign In</a>
+                </p>
+            </form>
+
+        </div>
     </div>
 
     <script src="script.js"></script>
