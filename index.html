@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Saathi - Personal Health Journal</title>
+    <title>Health Saathi - Clinical Journal & Reports</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- html2pdf dependency for instant diagnostic reports export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; color: #1e293b; font-family: system-ui, -apple-system, sans-serif;">
 
     <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px 30px; box-sizing: border-box;">
         
+        <!-- MAIN NAVIGATION HEADER -->
         <header style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 25px 35px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-bottom: 35px; gap: 20px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 16px;">
                 <span style="font-size: 2.5rem;">🏥</span>
                 <div>
                     <h1 style="margin: 0; font-size: 1.85rem; font-weight: 800; color: #0f172a;">Health Saathi</h1>
-                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 0.95rem;">Your Personal Health Journal</p>
+                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 0.95rem;">AI Clinical Reporting System</p>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
@@ -24,6 +27,7 @@
             </div>
         </header>
 
+        <!-- DASHBOARD MENU BUTTONS -->
         <nav style="display: flex; gap: 12px; margin-bottom: 35px; overflow-x: auto; padding-bottom: 5px;">
             <button id="btn-dashboard" onclick="switchTab('dashboard')" style="padding: 12px 24px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; background: #e0e7ff; color: #4f46e5;">📊 Dashboard</button>
             <button id="btn-vitals" onclick="switchTab('vitals')" style="padding: 12px 24px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; background: transparent; color: #64748b;">❤️ Vitals</button>
@@ -31,25 +35,28 @@
             <button id="btn-medicines" onclick="switchTab('medicines')" style="padding: 12px 24px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; background: transparent; color: #64748b;">💊 Medicines</button>
         </nav>
 
+        <!-- DATA CAPTURE VIEWS -->
         <main>
+            <!-- DASHBOARD SECTION -->
             <div id="dashboard-tab">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 30px; margin-bottom: 40px;">
                     <div style="background: white; padding: 35px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); text-align: center;">
-                        <p style="margin: 0 0 10px 0; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Latest BP</p>
+                        <p style="margin: 0 0 10px 0; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Latest BP Status</p>
                         <h2 id="dash-bp" style="margin: 0; font-size: 2.5rem; font-weight: 800; color: #1e293b;">120/80</h2>
                         <span style="color: #94a3b8; font-size: 0.9rem;">mmHg</span>
                     </div>
                     <div style="background: white; padding: 35px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); text-align: center;">
-                        <p style="margin: 0 0 10px 0; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Blood Sugar</p>
+                        <p style="margin: 0 0 10px 0; color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 0.85rem;">Blood Glucose</p>
                         <h2 id="dash-sugar" style="margin: 0; font-size: 2.5rem; font-weight: 800; color: #1e293b;">95</h2>
                         <span style="color: #94a3b8; font-size: 0.9rem;">mg/dL</span>
                     </div>
                 </div>
             </div>
 
+            <!-- VITALS INPUT -->
             <div id="vitals-tab" style="display: none; margin-bottom: 40px;">
                 <div style="padding: 40px; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Log New Telemetry Vitals</h3>
+                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Log Vitals</h3>
                     <form id="vitals-form" style="display: flex; flex-direction: column; gap: 24px;">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px;">
                             <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -63,43 +70,71 @@
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px; max-width: 300px;">
                             <label style="font-weight: 600; color: #475569;">Blood Sugar (mg/dL)</label>
-                            <input type="number" id="vitals-sugar" placeholder="95" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <input type="number" id="vitals-sugar" placeholder="95" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
                         </div>
-                        <button type="submit" style="padding: 14px 28px; font-weight: 700; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; align-self: flex-start;">Save Vitals Entry</button>
+                        <button type="submit" style="padding: 14px 28px; font-weight: 700; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; align-self: flex-start;">Save Vitals</button>
                     </form>
                 </div>
             </div>
 
+            <!-- NUTRITION DIARY -->
             <div id="food-tab" style="display: none; margin-bottom: 40px;">
                 <div style="padding: 40px; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Log Food Consumption</h3>
+                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Nutritional Intake</h3>
                     <form id="food-form" style="display: flex; flex-direction: column; gap: 24px;">
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <label style="font-weight: 600; color: #475569;">Meal Details</label>
-                            <input type="text" id="food-desc" placeholder="e.g. Oats with fresh milk and fruit" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+                            <label style="font-weight: 600; color: #475569;">Meal Summary</label>
+                            <input type="text" id="food-desc" placeholder="e.g. Whole wheat toast and egg whites" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
                         </div>
                         <button type="submit" style="padding: 14px 28px; font-weight: 700; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; align-self: flex-start;">Save Food Log</button>
                     </form>
                 </div>
             </div>
 
+            <!-- MEDICINES LOGGER WITH MG FIELD -->
             <div id="medicines-tab" style="display: none; margin-bottom: 40px;">
                 <div style="padding: 40px; background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Add Medication Plan</h3>
+                    <h3 style="font-size: 1.6rem; margin-bottom: 25px; font-weight: 700;">Prescription Log</h3>
                     <form id="med-form" style="display: flex; flex-direction: column; gap: 24px;">
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <label style="font-weight: 600; color: #475569;">Medicine Name</label>
-                            <input type="text" id="med-name" placeholder="e.g. Metformin 500mg" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-weight: 600; color: #475569;">Medicine Name</label>
+                                <input type="text" id="med-name" placeholder="e.g. Metformin" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="font-weight: 600; color: #475569;">Strength (mg)</label>
+                                <input type="number" id="med-mg" placeholder="500" style="padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+                            </div>
                         </div>
-                        <button type="submit" style="padding: 14px 28px; font-weight: 700; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; align-self: flex-start;">Schedule Medication</button>
+                        <button type="submit" style="padding: 14px 28px; font-weight: 700; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; align-self: flex-start;">Log Medicine</button>
                     </form>
                 </div>
             </div>
 
+            <!-- COMPLETE CLINICAL EXPORT PANEL (Added a clean wrapper to fix PDF rendering bugs) -->
             <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-top: 35px;">
-                <h3 style="font-size: 1.5rem; color: #0f172a; margin: 0 0 20px 0; font-weight: 700; display: flex; align-items: center; gap: 10px;">📖 Your Health Journey History</h3>
-                <div id="journeyLogHistory" style="display: flex; flex-direction: column; gap: 14px;">
-                    <p style="color: #64748b; font-style: italic; margin: 0;" id="empty-log-msg">No journey logs saved yet. Submit any form tab above to compile your records!</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h3 style="font-size: 1.6rem; color: #0f172a; margin: 0; font-weight: 700;">📋 Medical Diagnostic Report</h3>
+                        <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.9rem;">Generated automatically for clinical consultation</p>
+                    </div>
+                    <button onclick="downloadDoctorPDF()" style="padding: 14px 24px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">📥 Export Report PDF</button>
+                </div>
+
+                <div id="printableReportArea" style="padding: 10px; background: white;">
+                    <!-- AUTOMATED CLINICAL INSIGHTS -->
+                    <div id="clinicalInsightsBox" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+                        <h4 style="margin: 0 0 12px 0; color: #166534; font-size: 1.15rem; font-weight: 700;">💡 Doctor Summary & Insights</h4>
+                        <ul id="insightsList" style="margin: 0; padding-left: 20px; color: #1e293b; font-weight: 500; display: flex; flex-direction: column; gap: 8px;">
+                            <li style="color: #64748b; font-style: italic; list-style: none;">No diagnostic data logged yet. Add vitals or medications to generate insights.</li>
+                        </ul>
+                    </div>
+
+                    <!-- DATA LOG HISTORY LIST -->
+                    <h4 style="font-size: 1.1rem; color: #334155; margin: 0 0 15px 0; font-weight: 700;">Timeline Ledger</h4>
+                    <div id="journeyLogHistory" style="display: flex; flex-direction: column; gap: 14px;">
+                        <p style="color: #64748b; font-style: italic; margin: 0;" id="empty-log-msg">No entries found.</p>
+                    </div>
                 </div>
             </div>
 
