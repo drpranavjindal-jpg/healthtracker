@@ -3,114 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Saathi - Welcome</title>
+    <title>Health Saathi - Secure Access</title>
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="auth.css">
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-card">
-            <div class="auth-header">
-                <h1>🏥 Health Saathi</h1>
-                <p class="subtitle">Your Personal Health Companion</p>
-            </div>
-
-            <div id="login-section" class="auth-section active">
-                <h2>Welcome!</h2>
-                <p class="help-text">Enter your details to start tracking your health journey</p>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Your Name <span class="required">*</span></label>
-                        <input type="text" id="user-name" required placeholder="e.g., Radha Sharma" autocomplete="name">
-                    </div>
-                    <div class="form-group">
-                        <label>Email Address <span class="required">*</span></label>
-                        <input type="email" id="user-username" required placeholder="Enter your email address" autocomplete="email">
-                        <small>This will be your unique login identifier</small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Continue</button>
-                </form>
-            </div>
-
-            <div id="profile-setup-section" class="auth-section">
-                <h2>👋 Welcome to Health Saathi!</h2>
-                <p class="setup-intro">Let's set up your health profile to provide personalized insights.</p>
-                
-                <form id="profile-setup-form">
-                    <div class="form-group">
-                        <label>Age <span class="required">*</span></label>
-                        <input type="number" id="setup-age" required min="1" max="120" placeholder="Your age">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Gender <span class="required">*</span></label>
-                        <select id="setup-gender" required>
-                            <option value="">Select gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Height (cm) <span class="required">*</span></label>
-                            <input type="number" id="setup-height" required min="50" max="300" placeholder="e.g., 170">
-                        </div>
-                        <div class="form-group">
-                            <label>Weight (kg) <span class="required">*</span></label>
-                            <input type="number" id="setup-weight" required min="20" max="300" step="0.1" placeholder="e.g., 70.5">
-                        </div>
-                    </div>
-
-                    <h3>📊 Baseline Health Information</h3>
-                    <p class="help-text">Optional: Enter your typical/average readings for better insights</p>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Average Systolic BP (mmHg)</label>
-                            <input type="number" id="setup-avg-systolic" placeholder="e.g., 120" min="80" max="200">
-                            <small>Optional</small>
-                        </div>
-                        <div class="form-group">
-                            <label>Average Diastolic BP (mmHg)</label>
-                            <input type="number" id="setup-avg-diastolic" placeholder="e.g., 80" min="50" max="130">
-                            <small>Optional</small>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Average Fasting Blood Sugar (mg/dL)</label>
-                        <input type="number" id="setup-avg-sugar" placeholder="e.g., 95" min="50" max="300">
-                        <small>Optional</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Existing Medical Conditions</label>
-                        <textarea id="setup-conditions" rows="3" placeholder="e.g., Type 2 Diabetes, Hypertension..."></textarea>
-                        <small>Optional - Helps the AI assistant provide better advice</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Current Medications</label>
-                        <textarea id="setup-medications" rows="3" placeholder="List any regular medications..."></textarea>
-                        <small>Optional</small>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Start Tracking</button>
-                </form>
-            </div>
+            <h2>Welcome to Health Saathi</h2>
+            <p>Your secure, local health companion</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userName">Full Name</label>
+                    <input type="text" id="userName" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email Address</label>
+                    <input type="email" id="userEmail" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Enter Dashboard</button>
+            </form>
         </div>
 
-        <footer class="auth-footer">
+        <footer class="auth-footer" style="margin-top: 20px; text-align: center;">
             <div class="privacy-notice-footer">
-                <h4>🔒 Your Privacy Matters</h4>
-                <p>All your health data is stored <strong>locally on your device only</strong>. We (the developers) do NOT have access to your personal health information. Your data is completely private and secure.</p>
+                <h4>🔒 Absolute Privacy</h4>
+                <p>All your health metrics are stored <strong>locally on your device only</strong>.</p>
             </div>
-<button onclick="clearActiveSession()" class="logout-btn">Log Out</button>
         </footer>
     </div>
 
-    <script src="auth.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

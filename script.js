@@ -15,7 +15,7 @@ function checkActiveSession() {
     const activeEmail = localStorage.getItem('currentUserEmail');
     const isAuthPage = window.location.pathname.includes('auth.html');
 
-    // SCENARIO 1: No user logged in -> Force clean stay on auth.html
+    // If no user is logged in, only redirect if they are trying to view the dashboard (index)
     if (!activeEmail) {
         if (!isAuthPage) {
             window.location.href = './auth.html';
@@ -23,14 +23,14 @@ function checkActiveSession() {
         return; 
     }
 
-    // SCENARIO 2: User IS logged in -> Force stay on index.html dashboard
-    if (activeEmail) {
-        if (isAuthPage) {
-            window.location.href = './index.html';
-            return;
-        }
-        
-        // Dynamically personalize dashboard UI with safe storage elements
+    // If a user IS logged in and they somehow wander onto auth.html, take them to the dashboard
+    if (activeEmail && isAuthPage) {
+        window.location.href = './index.html';
+        return;
+    }
+
+    // Personalize dashboard elements if we are on index.html
+    if (activeEmail && !isAuthPage) {
         const activeName = localStorage.getItem('currentUserName') || "User";
         const userNameElement = document.getElementById('displayUserName');
         if (userNameElement) {
@@ -48,11 +48,11 @@ function handleLoginSubmit(e) {
     const nameInput = document.getElementById('userName')?.value.trim() || "Guest User";
     const emailInput = document.getElementById('userEmail')?.value.trim() || "guest@healthsaathi.com";
 
-    // Instantly save tracking parameters locally
+    // Instantly save parameters locally
     localStorage.setItem('currentUserEmail', emailInput);
     localStorage.setItem('currentUserName', nameInput);
 
-    // Bounce cleanly straight over to index panel view
+    // Secure leap forward into the dashboard layout
     window.location.href = './index.html';
 }
 
