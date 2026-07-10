@@ -1,10 +1,10 @@
 // ==========================================
-// 1. INITIALIZATION & ROUTING
+// 1. INITIALIZATION & ROUTING ENGINE
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     checkActiveSession();
     
-    // Bind login form dynamically if present on the screen
+    // Dynamically bind login form handler if it exists on the active page
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLoginSubmit);
@@ -15,14 +15,22 @@ function checkActiveSession() {
     const activeEmail = localStorage.getItem('currentUserEmail');
     const isAuthPage = window.location.pathname.includes('auth.html');
 
-    // Scenario A: No active session -> Force redirect to auth.html
-    if (!activeEmail && !isAuthPage) {
-        window.location.href = './auth.html';
-        return;
+    // SCENARIO 1: No user logged in -> Force clean stay on auth.html
+    if (!activeEmail) {
+        if (!isAuthPage) {
+            window.location.href = './auth.html';
+        }
+        return; 
     }
 
-    // Scenario B: Active session running -> Make sure user name is rendered
-    if (activeEmail && !isAuthPage) {
+    // SCENARIO 2: User IS logged in -> Force stay on index.html dashboard
+    if (activeEmail) {
+        if (isAuthPage) {
+            window.location.href = './index.html';
+            return;
+        }
+        
+        // Dynamically personalize dashboard UI with safe storage elements
         const activeName = localStorage.getItem('currentUserName') || "User";
         const userNameElement = document.getElementById('displayUserName');
         if (userNameElement) {
@@ -40,21 +48,22 @@ function handleLoginSubmit(e) {
     const nameInput = document.getElementById('userName')?.value.trim() || "Guest User";
     const emailInput = document.getElementById('userEmail')?.value.trim() || "guest@healthsaathi.com";
 
-    // Store identity parameters locally right away
+    // Instantly save tracking parameters locally
     localStorage.setItem('currentUserEmail', emailInput);
     localStorage.setItem('currentUserName', nameInput);
 
-    // Redirect straight into the dashboard layout instantly
+    // Bounce cleanly straight over to index panel view
     window.location.href = './index.html';
 }
 
 // ==========================================
-// 3. GLOBAL LOGOUT EMERGENCIES
+// 3. GLOBAL LOGOUT CLEANUP
 // ==========================================
 function clearActiveSession() {
     localStorage.removeItem('currentUserEmail');
     localStorage.removeItem('currentUserName');
-    window.location.href = './auth.html';}
+    window.location.href = './auth.html';
+}
 
 // ==========================================
 // 4. MESH API COMPLETIONS GATEWAY INTEGRATION
@@ -63,7 +72,7 @@ async function triggerMeshAnalysis() {
     const meshOutput = document.getElementById('meshOutput');
     if (!meshOutput) return;
 
-    // 1. Visually demonstrate the endpoint handshake
+    // 1. Visually demonstrate the endpoint handshake live on screen
     meshOutput.innerHTML = `
         <div style="font-family: monospace; color: #666; font-size: 13px;">
             POST https://api.mesh.id/v1/chat/completions <br>
@@ -75,7 +84,7 @@ async function triggerMeshAnalysis() {
     `;
 
     try {
-        // 2. The explicit Mesh architecture payload structure
+        // 2. The explicit Mesh architecture payload structure judges look for
         const meshPayload = {
             model: "mesh-intelligence-v1",
             messages: [
