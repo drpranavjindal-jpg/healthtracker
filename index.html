@@ -2,44 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Health Saathi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Saathi - Final</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
-        .tab-section { display: none; padding: 20px; border: 1px solid #ccc; margin-top: 10px; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        nav { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        nav button { padding: 10px 20px; border: none; background: transparent; cursor: pointer; border-radius: 8px; font-weight: 500; }
+        .active-btn { background: var(--primary) !important; color: white !important; }
+
+        .tab-section { display: none; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .active { display: block; }
-        nav { margin-bottom: 20px; }
-        button { padding: 10px; cursor: pointer; }
-        #printable-area { border: 2px solid #000; padding: 20px; margin-top: 30px; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fdfdfd; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        button.action { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
+        
+        #printable-area { margin-top: 30px; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; background: white; }
     </style>
 </head>
 <body>
 
-    <h1>Health Saathi</h1>
-    
+<div class="container">
+    <header style="margin-bottom: 30px;">
+        <h1 style="margin: 0;">Health Saathi</h1>
+        <p style="color: #64748b;">Clinical Patient Management Portal</p>
+    </header>
+
     <nav>
-        <button onclick="switchTab('vitals-section')">Vitals (BP/Sugar)</button>
-        <button onclick="switchTab('food-section')">Food</button>
-        <button onclick="switchTab('med-section')">Medicine</button>
+        <button onclick="switchTab('dash-section', this)" class="active-btn">Dashboard</button>
+        <button onclick="switchTab('vitals-section', this)">Vitals</button>
+        <button onclick="switchTab('food-section', this)">Food</button>
+        <button onclick="switchTab('med-section', this)">Meds</button>
     </nav>
 
-    <div id="vitals-section" class="tab-section active">
-        <h3>Log Vitals</h3>
-        <input type="text" id="bp" placeholder="BP (e.g., 120/80)">
-        <input type="text" id="sugar" placeholder="Sugar (e.g., 110)">
-        <button onclick="saveVitals()">Save Vitals</button>
+    <div id="dash-section" class="tab-section active">
+        <h2>Patient Summary</h2>
+        <div id="dash-grid" class="grid"></div>
+    </div>
+
+    <div id="vitals-section" class="tab-section">
+        <h3>Log Clinical Vitals</h3>
+        <input type="text" id="bp" placeholder="BP (e.g. 120/80 mmHg)">
+        <input type="text" id="sugar" placeholder="Blood Sugar (mg/dL)">
+        <button class="action" onclick="saveVitals()">Save Vitals</button>
     </div>
 
     <div id="food-section" class="tab-section">
-        <h3>Log Food</h3>
-        <input type="text" id="food" placeholder="Food Name">
-        <button onclick="saveFood()">Save Food</button>
+        <h3>Diet Log</h3>
+        <input type="text" id="food" placeholder="What did the patient eat?">
+        <button class="action" onclick="saveFood()">Save Diet Log</button>
     </div>
 
     <div id="med-section" class="tab-section">
-        <h3>Log Medicine</h3>
-        <input type="text" id="med" placeholder="Medicine Name">
-        <button onclick="saveMed()">Save Medicine</button>
+        <h3>Medication Log</h3>
+        <input type="text" id="med" placeholder="Medication Name & Dosage">
+        <button class="action" onclick="saveMed()">Save Prescription</button>
     </div>
 
     <div id="printable-area">
@@ -47,8 +69,9 @@
         <div id="report-content"></div>
     </div>
     <br>
-    <button onclick="exportPDF()" style="background: green; color: white; padding: 15px;">Download PDF</button>
+    <button onclick="exportPDF()" style="background: #059669; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer;">Download Clinical PDF</button>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
