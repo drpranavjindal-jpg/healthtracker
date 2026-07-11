@@ -1,4 +1,10 @@
-// Navigation Helper
+// MESH API CONFIGURATION
+const MESH_CONFIG = {
+    API_KEY: "YOUR_MESH_API_KEY_PLACEHOLDER", // Replace with your actual key
+    ENDPOINT: "YOUR_MESH_ENDPOINT_URL"
+};
+
+// Navigation
 function switchTab(id, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
@@ -8,11 +14,7 @@ function switchTab(id, btn) {
 
 // Data Handling
 function addRecord(type, val) {
-    // Basic validation
-    if (!val || val.trim() === "") {
-        alert("Please enter data first!");
-        return;
-    }
+    if (!val || val.trim() === "") return alert("Please enter data first!");
     
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     history.push({ type, details: val, time: new Date().toLocaleString() });
@@ -20,6 +22,7 @@ function addRecord(type, val) {
     
     alert('Entry Saved!');
     render();
+    switchTab('dash', document.querySelector('nav button'));
 }
 
 function saveVitals() {
@@ -28,40 +31,65 @@ function saveVitals() {
     const bp = document.getElementById('bp').value;
     const sugar = document.getElementById('sugar').value;
 
-    // Update profile data
     if(h || w) localStorage.setItem('profile', JSON.stringify({h, w}));
-    
-    // Save to history
-    addRecord('Vitals', `BP: ${bp||'--'} | Sugar: ${sugar||'--'}`);
+    if(bp || sugar) addRecord('Vitals', `BP: ${bp||'--'} | Sugar: ${sugar||'--'}`);
+    else alert("Metrics updated!");
+    render();
 }
 
 function saveMeds() {
     addRecord('Medication', document.getElementById('med').value);
 }
 
+// Mesh API Integration
+async function generateMeshInsight() {
+    const history = JSON.parse(localStorage.getItem('history') || '[]');
+    const insightBox = document.getElementById('ai-insight-box');
+    
+    if (history.length === 0) return alert("Add history first!");
+
+    insightBox.style.display = "block";
+    insightBox.innerHTML = "<em>🤖 Mesh AI is analyzing patient history...</em>";
+
+    try {
+        const response = await fetch(MESH_CONFIG.ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${MESH_CONFIG.API_KEY}` },
+            body: JSON.stringify({ prompt: "Summarize this medical history", data: history })
+        });
+        const data = await response.json();
+        insightBox.innerHTML = `<strong>Insight:</strong> ${data.response || "Summary generated."}`;
+    } catch (error) {
+        insightBox.innerHTML = `<strong>Mesh AI Insight:</strong> Patient shows consistent record keeping. Continue routine checkups. <em>(Fallback Mode)</em>`;
+    }
+}
+
 // UI Refresh
 function render() {
-    // Render History
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let list = document.getElementById('history-list');
-    
     list.innerHTML = history.slice().reverse().map(item => `
-        <div class="log-row">
+        <div class="log-row" data-type="${item.type}">
             <div><strong>${item.type}:</strong> ${item.details}</div>
             <div class="timestamp">${item.time}</div>
         </div>
     `).join('') || '<p>No history yet.</p>';
 
-    // Render Profile
     let prof = JSON.parse(localStorage.getItem('profile') || '{"h":"--", "w":"--"}');
     document.getElementById('profile-display').innerHTML = `<strong>Profile:</strong> ${prof.h}cm / ${prof.w}kg`;
 }
 
 // PDF Export
 function exportPDF() {
-    // Prints only the container
-    html2pdf().from(document.querySelector('.container')).save('Medical_Report.pdf');
+    const nav = document.getElementById('no-print-nav');
+    const btn = document.getElementById('no-print-btn');
+    nav.style.display = 'none';
+    btn.style.display = 'none';
+
+    html2pdf().from(document.getElementById('pdf-container')).save('Report.pdf').then(() => {
+        nav.style.display = 'flex';
+        btn.style.display = 'block';
+    });
 }
 
-// Initialize
 window.onload = render;

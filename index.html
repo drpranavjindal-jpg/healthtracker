@@ -4,46 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Saathi - Clinical Journal</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        header { margin-bottom: 20px; text-align: center; }
-        
-        nav { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
-        nav button { padding: 8px 16px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        nav button.active-btn { background: var(--primary); color: white; }
-        
-        .tab-section { display: none; }
-        .active { display: block; }
-        
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        button.action { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        .log-row { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-        .timestamp { font-size: 0.75rem; color: #64748b; }
-        .profile-card { background: #eff6ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-    </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="pdf-container">
     <header>
-        <h2 style="margin:0;">Health Saathi</h2>
+        <h2>Health Saathi</h2>
+        <p>Official Clinical Record</p>
     </header>
 
-    <nav>
-        <button onclick="switchTab('dash', this)" class="active-btn">History</button>
+    <nav id="no-print-nav">
+        <button onclick="switchTab('dash', this)" class="active-btn">Journal</button>
         <button onclick="switchTab('vitals', this)">Vitals</button>
         <button onclick="switchTab('meds', this)">Meds</button>
     </nav>
 
     <div id="dash" class="tab-section active">
-        <div class="profile-card" id="profile-display">Profile: Not set</div>
-        <h3>Clinical History</h3>
+        <div class="profile-card" id="profile-display"><strong>Profile:</strong> Not set</div>
+        <h3 style="color: var(--primary-color);">Patient History</h3>
+        
         <div id="history-list"></div>
-        <button onclick="exportPDF()" class="action" style="background:#059669; margin-top:20px;">Download Report (PDF)</button>
+        
+        <button onclick="generateMeshInsight()" class="action" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            🧠 Generate AI Summary (Mesh API)
+        </button>
+        <div id="ai-insight-box" style="display:none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 5px solid #10b981; border-radius: 8px;"></div>
+
+        <button onclick="exportPDF()" class="action" id="no-print-btn" style="background: #059669; margin-top:15px;">Download Report (PDF)</button>
     </div>
 
     <div id="vitals" class="tab-section">
