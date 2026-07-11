@@ -1,4 +1,3 @@
-// Tab Switching
 function switchTab(id, btn) {
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
@@ -6,53 +5,48 @@ function switchTab(id, btn) {
     btn.classList.add('active-btn');
 }
 
-// Logic to refresh UI and PDF area
-function updateReport() {
-    const report = document.getElementById('report-content');
-    const grid = document.getElementById('dash-grid');
+// Global Save Function with Input Validation
+function addRecord(type, val) {
+    if (!val || val.trim() === '') {
+        alert("Please enter some data before saving!");
+        return;
+    }
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    history.push({ type, details: val, time: new Date().toLocaleString() });
+    localStorage.setItem('history', JSON.stringify(history));
+    alert('Entry Saved!');
+    render();
+}
+
+function saveVitals() {
+    const bp = document.getElementById('bp').value;
+    const sugar = document.getElementById('sugar').value;
+    if(!bp && !sugar) { alert("Please fill at least one field"); return; }
+    addRecord('Vitals', `BP: ${bp || 'N/A'} | Sugar: ${sugar || 'N/A'}`);
+}
+
+function saveMeds() {
+    addRecord('Medication', document.getElementById('med').value);
+}
+
+function render() {
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    let list = document.getElementById('history-list');
     
-    // UI Data
-    const bp = localStorage.getItem('bp') || 'No Data';
-    const sugar = localStorage.getItem('sugar') || 'No Data';
-    const food = localStorage.getItem('food') || 'No Data';
-    const med = localStorage.getItem('med') || 'No Data';
-
-    // Update Report PDF area
-    report.innerHTML = `
-        <p><strong>BP:</strong> ${bp}</p>
-        <p><strong>Sugar:</strong> ${sugar}</p>
-        <p><strong>Diet:</strong> ${food}</p>
-        <p><strong>Meds:</strong> ${med}</p>
-    `;
-
-    // Update Dashboard Cards
-    grid.innerHTML = `
-        <div class="card"><h4>BP</h4><p>${bp}</p></div>
-        <div class="card"><h4>Sugar</h4><p>${sugar}</p></div>
-        <div class="card"><h4>Diet</h4><p>${food}</p></div>
-        <div class="card"><h4>Meds</h4><p>${med}</p></div>
-    `;
+    // Reverse to show latest logs first
+    list.innerHTML = history.slice().reverse().map(item => `
+        <div class="log-row">
+            <div><strong>${item.type}:</strong> ${item.details}</div>
+            <div class="timestamp">${item.time}</div>
+        </div>
+    `).join('').trim() || '<p>No records yet.</p>';
 }
 
-// Save Functions
-function saveVitals() { 
-    localStorage.setItem('bp', document.getElementById('bp').value); 
-    localStorage.setItem('sugar', document.getElementById('sugar').value); 
-    alert('Saved'); updateReport(); 
-}
-function saveFood() { 
-    localStorage.setItem('food', document.getElementById('food').value); 
-    alert('Saved'); updateReport(); 
-}
-function saveMed() { 
-    localStorage.setItem('med', document.getElementById('med').value); 
-    alert('Saved'); updateReport(); 
+function exportPDF() {
+    const element = document.getElementById('history-list');
+    // Targeting the history container specifically for the PDF
+    html2pdf().from(element).save('Medical_Report.pdf');
 }
 
-// Export PDF
-function exportPDF() { 
-    html2pdf().from(document.getElementById('printable-area')).save('Medical_Report.pdf'); 
-}
-
-// Ensure app loads correctly
-document.addEventListener('DOMContentLoaded', updateReport);
+// Ensure the page loads current data
+window.onload = render;
