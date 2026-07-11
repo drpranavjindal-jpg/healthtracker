@@ -6,24 +6,33 @@
     <title>Health Saathi - Clinical Journal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); padding: 20px; color: #1e293b; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .tab-section { display: none; padding: 20px 0; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        header { margin-bottom: 20px; text-align: center; }
+        
+        nav { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+        nav button { padding: 8px 16px; border: none; background: #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        nav button.active-btn { background: var(--primary); color: white; }
+        
+        .tab-section { display: none; }
         .active { display: block; }
-        nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        nav button { padding: 10px 15px; cursor: pointer; border: none; background: #e2e8f0; border-radius: 6px; font-weight: 600; }
-        nav button.active-btn { background: #2563eb; color: white; }
-        .log-row { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .timestamp { font-size: 0.8em; color: #666; }
-        input { width: 100%; padding: 12px; margin: 8px 0 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
-        button.action { width: 100%; padding: 12px; cursor: pointer; border: none; border-radius: 6px; background: #2563eb; color: white; font-weight: bold; }
+        
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        button.action { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        .log-row { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .timestamp { font-size: 0.75rem; color: #64748b; }
+        .profile-card { background: #eff6ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Health Saathi</h1>
+    <header>
+        <h2 style="margin:0;">Health Saathi</h2>
+    </header>
+
     <nav>
         <button onclick="switchTab('dash', this)" class="active-btn">History</button>
         <button onclick="switchTab('vitals', this)">Vitals</button>
@@ -31,16 +40,19 @@
     </nav>
 
     <div id="dash" class="tab-section active">
-        <h2>Clinical Journal</h2>
+        <div class="profile-card" id="profile-display">Profile: Not set</div>
+        <h3>Clinical History</h3>
         <div id="history-list"></div>
-        <button onclick="exportPDF()" style="margin-top:20px; background:green; color:white; padding:12px; border:none; width:100%; border-radius:6px; cursor:pointer;">Download PDF Report</button>
+        <button onclick="exportPDF()" class="action" style="background:#059669; margin-top:20px;">Download Report (PDF)</button>
     </div>
 
     <div id="vitals" class="tab-section">
-        <h3>Log Vitals</h3>
-        <input type="text" id="bp" placeholder="Blood Pressure (e.g. 120/80)">
-        <input type="text" id="sugar" placeholder="Blood Sugar (mg/dL)">
-        <button class="action" onclick="saveVitals()">Save Vitals</button>
+        <h3>Patient Metrics</h3>
+        <input type="number" id="height" placeholder="Height (cm)">
+        <input type="number" id="weight" placeholder="Weight (kg)">
+        <input type="text" id="bp" placeholder="BP (e.g., 120/80)">
+        <input type="text" id="sugar" placeholder="Sugar (mg/dL)">
+        <button class="action" onclick="saveVitals()">Save Metrics</button>
     </div>
 
     <div id="meds" class="tab-section">
